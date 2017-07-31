@@ -77,49 +77,50 @@ var trigger = function trigger(el, type) {
 
 function updateValue(el) {
   var force = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-  var value = el.value,
-      _el$dataset = el.dataset,
-      _el$dataset$previousV = _el$dataset.previousValue,
-      previousValue = _el$dataset$previousV === undefined ? "" : _el$dataset$previousV,
-      mask = _el$dataset.mask;
 
+  var value = el.value;
+  var previousValue = void 0;
+  var mask = void 0;
+
+  previousValue = el.getAttribute('data-previous-value') || '';
+  mask = el.getAttribute('data-mask');
+
+  console.log(value, previousValue);
 
   if (force || value && value !== previousValue && value.length > previousValue.length) {
     el.value = format(value, mask);
     trigger(el, 'input');
   }
 
-  el.dataset.previousValue = value;
+  el.setAttribute('data-previous-value', value);
 }
 
 function updateMask(el, mask) {
-  el.dataset.mask = mask;
+  el.setAttribute('data-mask', mask);
 }
 
-var VueMaskDirective = {
-  bind: function bind(el, _ref) {
-    var value = _ref.value;
+var index = function (Vue) {
+  Vue.directive('mask', {
+    bind: function bind(el, _ref) {
+      var value = _ref.value;
 
-    updateMask(el, value);
-    updateValue(el);
-  },
-  componentUpdated: function componentUpdated(el, _ref2) {
-    var value = _ref2.value,
-        oldValue = _ref2.oldValue;
-
-
-    var isMaskChanged = value !== oldValue;
-
-    if (isMaskChanged) {
       updateMask(el, value);
+      updateValue(el);
+    },
+    componentUpdated: function componentUpdated(el, _ref2) {
+      var value = _ref2.value,
+          oldValue = _ref2.oldValue;
+
+
+      var isMaskChanged = value !== oldValue;
+
+      if (isMaskChanged) {
+        updateMask(el, value);
+      }
+
+      updateValue(el, isMaskChanged);
     }
-
-    updateValue(el, isMaskChanged);
-  }
+  });
 };
 
-var VueMaskPlugin = function VueMaskPlugin(Vue) {
-  Vue.directive('mask', VueMaskDirective);
-};
-
-export { VueMaskPlugin, VueMaskDirective };export default VueMaskPlugin;
+export default index;
