@@ -85,8 +85,6 @@ function updateValue(el) {
   previousValue = el.getAttribute('data-previous-value') || '';
   mask = el.getAttribute('data-mask');
 
-  console.log(value, previousValue);
-
   if (force || value && value !== previousValue && value.length > previousValue.length) {
     el.value = format(value, mask);
     trigger(el, 'input');
